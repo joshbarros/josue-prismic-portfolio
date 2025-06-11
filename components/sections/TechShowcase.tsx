@@ -5,6 +5,7 @@ import Bounded from "@/components/Bounded";
 import Heading from "@/components/Heading";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,6 +22,9 @@ const technologies = [
   { name: "Golang", color: "#00ADD8" },
   { name: "NodeJS", color: "#339933" },
   { name: "FastAPI", color: "#009688" },
+  { name: "WordPress", color: "#21759B" },
+  { name: "PHP", color: "#777BB4" },
+  { name: "WooCommerce", color: "#96588A" },
   { name: "MongoDB", color: "#47A248" },
   { name: "PostgreSQL", color: "#4169E1" },
   { name: "Redis", color: "#DC382D" },
@@ -38,6 +42,7 @@ const technologies = [
 
 export default function TechShowcase() {
   const component = useRef(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     let ctx = gsap.context(() => {
@@ -82,14 +87,14 @@ export default function TechShowcase() {
       <Bounded as="div">
         <div className="text-center mb-16">
           <Heading as="h2" size="xl" className="mb-4">
-            Powered by{" "}
+            {t('techShowcase.title')}{" "}
             <span className="bg-gradient-to-r from-yellow-300 to-yellow-500 bg-clip-text text-transparent">
-              Modern
+              {t('techShowcase.titleHighlight')}
             </span>{" "}
-            Technology
+            {t('techShowcase.titleEnd')}
           </Heading>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Full-stack expertise across frontend, backend, cloud, data engineering, and DevOps technologies to build comprehensive solutions.
+            {t('techShowcase.description')}
           </p>
         </div>
       </Bounded>

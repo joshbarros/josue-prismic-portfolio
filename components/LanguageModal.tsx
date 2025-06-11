@@ -1,51 +1,52 @@
 "use client";
 
-import React from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function LanguageModal() {
-  const { showLanguageModal, setLanguage, t } = useLanguage();
+  const { language, setLanguage, showLanguageModal, setShowLanguageModal, t } = useLanguage();
 
   if (!showLanguageModal) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="mx-4 w-full max-w-md rounded-2xl bg-slate-800 p-8 shadow-2xl border border-slate-700">
+      <div className="bg-slate-800 rounded-xl p-8 max-w-md w-full mx-4 border border-slate-700 shadow-2xl">
         <div className="text-center">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-slate-100 mb-2">
-              {t('modal.title', 'Choose Your Language')}
-            </h2>
-            <p className="text-slate-400">
-              {t('modal.subtitle', 'Select your preferred language for the best experience')}
-            </p>
-          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            {t('modal.title')}
+          </h2>
+          <p className="text-slate-300 mb-8">
+            {t('modal.subtitle')}
+          </p>
 
           <div className="space-y-4">
             <button
               onClick={() => setLanguage('en')}
-              className="w-full rounded-lg bg-gradient-to-r from-yellow-300 to-yellow-500 px-6 py-4 text-slate-900 font-semibold transition-all hover:from-yellow-400 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-300/50"
+              className="w-full flex items-center justify-center space-x-3 p-4 rounded-lg bg-slate-700 hover:bg-slate-600 transition-colors border border-slate-600"
             >
-              <div className="flex items-center justify-center gap-3">
-                <span className="text-xl">🇺🇸</span>
-                <span>{t('modal.english', 'English')}</span>
-              </div>
+              <span className="text-2xl">🇺🇸</span>
+              <span className="text-white font-medium">{t('modal.english')}</span>
             </button>
 
             <button
               onClick={() => setLanguage('pt')}
-              className="w-full rounded-lg border border-slate-600 bg-slate-700/50 px-6 py-4 text-slate-100 font-semibold transition-all hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500/50"
+              className="w-full flex items-center justify-center space-x-3 p-4 rounded-lg bg-slate-700 hover:bg-slate-600 transition-colors border border-slate-600"
             >
-              <div className="flex items-center justify-center gap-3">
-                <span className="text-xl">🇧🇷</span>
-                <span>{t('modal.portuguese', 'Português (Brasil)')}</span>
-              </div>
+              <span className="text-2xl">🇧🇷</span>
+              <span className="text-white font-medium">{t('modal.portuguese')}</span>
+            </button>
+
+            <button
+              onClick={() => setLanguage('es')}
+              className="w-full flex items-center justify-center space-x-3 p-4 rounded-lg bg-slate-700 hover:bg-slate-600 transition-colors border border-slate-600"
+            >
+              <span className="text-2xl">🇪🇸</span>
+              <span className="text-white font-medium">{t('modal.spanish')}</span>
             </button>
           </div>
 
-          <div className="mt-6 text-xs text-slate-500">
-            You can change this later using the language selector in the navigation
-          </div>
+          <p className="text-sm text-slate-400 mt-6">
+            {t('modal.footer')}
+          </p>
         </div>
       </div>
     </div>

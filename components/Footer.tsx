@@ -1,24 +1,34 @@
+"use client";
+
 import clsx from "clsx";
 import React from "react";
 import Link from "next/link";
 import Bounded from "@/components/Bounded";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { FaGithub, FaLinkedin, FaWhatsapp } from "react-icons/fa6";
 
-// Static footer data to replace Prismic settings
-const footerData = {
-  name: "Golden Glow IT Solutions",
-  nav_item: [
-    { label: "Home", link: "/" },
-    { label: "About", link: "/about" },
-    { label: "Services", link: "/services" },
-    { label: "Contact", link: "/contact" }
-  ],
-  github_link: "https://github.com/joshbarros",
-  linkedin_link: "https://linkedin.com/in/joshbarros",
-  whatsapp_link: "https://wa.me/5522981250144"
-};
-
 export default function Footer() {
+  const { t } = useLanguage();
+
+  // Static footer data with translation support
+  const footerData = {
+    name: t('company.name'),
+    nav_item: [
+      { label: t('nav.home'), link: "/" },
+      { label: t('nav.about'), link: "/about" },
+      { label: t('nav.services'), link: "/services" },
+      { label: t('nav.contact'), link: "/contact" }
+    ],
+    github_link: "https://github.com/joshbarros",
+    linkedin_link: "https://linkedin.com/in/joshbarros",
+    whatsapp_link: "https://wa.me/5522981250144"
+  };
+
+  const currentYear = new Date().getFullYear();
+  const copyright = t('footer.copyright')
+    .replace('{year}', currentYear.toString())
+    .replace('{company}', t('company.name'));
+
   return (
     <Bounded as="footer" className="text-slate-600">
       <div className="container mx-auto mt-20 flex flex-col items-center justify-between gap-6 py-8 sm:flex-row ">
@@ -36,7 +46,7 @@ export default function Footer() {
             /
           </span>
           <p className=" text-sm text-slate-300 ">
-            © {new Date().getFullYear()} {footerData.name}
+            {copyright}
           </p>
         </div>
         <nav className="navigation" aria-label="Footer Navigation">

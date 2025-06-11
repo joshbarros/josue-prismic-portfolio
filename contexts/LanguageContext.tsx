@@ -1,58 +1,17 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-type Language = 'en' | 'pt';
+import { translations, type Language, type TranslationPath, getNestedTranslation } from '@/translations';
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string, fallback?: string) => string;
+  t: (key: TranslationPath, fallback?: string) => string;
   showLanguageModal: boolean;
   setShowLanguageModal: (show: boolean) => void;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
-
-// Translation dictionaries - only translate what you want, keep English as fallback
-const translations = {
-  en: {
-    // Navigation
-    'nav.home': 'Home',
-    'nav.about': 'About',
-    'nav.services': 'Services',
-    'nav.contact': 'Contact',
-    'nav.getStarted': 'Get Started',
-
-    // Language Modal
-    'modal.title': 'Choose Your Language',
-    'modal.subtitle': 'Select your preferred language for the best experience',
-    'modal.english': 'English',
-    'modal.portuguese': 'Português (Brasil)',
-    'modal.continue': 'Continue',
-
-    // Company Name
-    'company.name': 'Golden Glow IT Solutions',
-  },
-  pt: {
-    // Navigation
-    'nav.home': 'Início',
-    'nav.about': 'Sobre',
-    'nav.services': 'Serviços',
-    'nav.contact': 'Contato',
-    'nav.getStarted': 'Começar',
-
-    // Language Modal
-    'modal.title': 'Escolha Seu Idioma',
-    'modal.subtitle': 'Selecione seu idioma preferido para a melhor experiência',
-    'modal.english': 'English',
-    'modal.portuguese': 'Português (Brasil)',
-    'modal.continue': 'Continuar',
-
-    // Company Name
-    'company.name': 'Golden Glow IT Solutions',
-  }
-};
 
 interface LanguageProviderProps {
   children: ReactNode;
@@ -67,7 +26,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     const savedLanguage = localStorage.getItem('preferred-language') as Language;
     const hasVisited = localStorage.getItem('has-visited');
 
-    if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'pt')) {
+    if (savedLanguage && savedLanguage in translations) {
       setLanguageState(savedLanguage);
     } else if (!hasVisited) {
       // First visit - show language modal
@@ -82,9 +41,9 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     setShowLanguageModal(false);
   };
 
-  const t = (key: string, fallback?: string): string => {
-    const translation = translations[language][key as keyof typeof translations['en']];
-    return translation || fallback || key;
+  const t = (key: TranslationPath, fallback?: string): string => {
+    const currentTranslations = translations[language];
+    return getNestedTranslation(currentTranslations, key, fallback);
   };
 
   return (
@@ -108,4 +67,5 @@ export function useLanguage() {
   return context;
 }
 
+// Re-export for convenience
 export { translations };

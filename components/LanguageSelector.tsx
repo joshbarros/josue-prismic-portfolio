@@ -22,9 +22,10 @@ export default function LanguageSelector() {
   }, []);
 
   const languages = [
-    { code: 'en', label: 'English', flag: '🇺🇸' },
-    { code: 'pt', label: 'Português', flag: '🇧🇷' }
-  ];
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'pt', name: 'Português', flag: '🇧🇷' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+  ] as const;
 
   const currentLanguage = languages.find(lang => lang.code === language);
 
@@ -32,13 +33,12 @@ export default function LanguageSelector() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-800/50 focus:outline-none focus:ring-2 focus:ring-yellow-300/50"
-        aria-label="Select language"
+        className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 transition-colors border border-slate-600/50 text-sm"
       >
-        <span className="text-base">{currentLanguage?.flag}</span>
-        <span className="hidden sm:inline">{currentLanguage?.label}</span>
+        <span className="text-lg">{currentLanguage?.flag}</span>
+        <span className="text-slate-200 hidden sm:block">{currentLanguage?.name}</span>
         <svg
-          className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -48,28 +48,31 @@ export default function LanguageSelector() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-40 rounded-lg border border-slate-600 bg-slate-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 z-50">
-          {languages.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => {
-                setLanguage(lang.code as 'en' | 'pt');
-                setIsOpen(false);
-              }}
-              className={`flex w-full items-center gap-3 px-4 py-2 text-sm transition-colors hover:bg-slate-700 ${
-                language === lang.code ? 'bg-slate-700 text-yellow-300' : 'text-slate-100'
-              }`}
-            >
-              <span className="text-base">{lang.flag}</span>
-              <span>{lang.label}</span>
-              {language === lang.code && (
-                <svg className="ml-auto h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-            </button>
-          ))}
-        </div>
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-xl border border-slate-600 z-50">
+            <div className="py-2">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    setLanguage(lang.code);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full px-4 py-2 text-left flex items-center space-x-3 hover:bg-slate-700 transition-colors ${
+                    language === lang.code ? 'bg-slate-700/50 text-yellow-300' : 'text-slate-200'
+                  }`}
+                >
+                  <span className="text-lg">{lang.flag}</span>
+                  <span>{lang.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

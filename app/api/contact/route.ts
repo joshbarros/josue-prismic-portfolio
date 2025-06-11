@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { translations, type Language } from '@/translations';
 
 interface ContactFormData {
   name: string;
@@ -8,12 +9,131 @@ interface ContactFormData {
   service?: string;
   budget?: string;
   message: string;
+  language?: Language; // Add language preference
+}
+
+// Helper function to get translation with fallback
+function getTranslation(lang: Language, key: string, replacements: Record<string, string> = {}): string {
+  const keys = key.split('.');
+  let value: any = translations[lang] || translations.en;
+
+  for (const k of keys) {
+    value = value?.[k];
+  }
+
+  if (typeof value !== 'string') {
+    // Fallback to English if translation not found
+    value = translations.en;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+  }
+
+  if (typeof value === 'string') {
+    // Replace placeholders
+    for (const [placeholder, replacement] of Object.entries(replacements)) {
+      value = value.replace(new RegExp(`{${placeholder}}`, 'g'), replacement);
+    }
+  }
+
+  return value || key;
+}
+
+// Helper function to format service name
+function formatServiceName(service: string, lang: Language): string {
+  if (!service) return '';
+
+  const serviceMapping: Record<string, Record<Language, string>> = {
+    'website-development': {
+      en: 'Website Development',
+      pt: 'Desenvolvimento de Website',
+      es: 'Desarrollo de Sitio Web'
+    },
+    'ecommerce-development': {
+      en: 'Ecommerce Development',
+      pt: 'Desenvolvimento de Ecommerce',
+      es: 'Desarrollo de Ecommerce'
+    },
+    'mobile-development': {
+      en: 'Mobile Development',
+      pt: 'Desenvolvimento Mobile',
+      es: 'Desarrollo Móvil'
+    },
+    'custom-solutions': {
+      en: 'Custom Solutions',
+      pt: 'Soluções Personalizadas',
+      es: 'Soluciones Personalizadas'
+    },
+    'other': {
+      en: 'Other Services',
+      pt: 'Outros Serviços',
+      es: 'Otros Servicios'
+    }
+  };
+
+  return serviceMapping[service]?.[lang] || service.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+
+// Helper function to format budget range
+function formatBudgetRange(budget: string, lang: Language): string {
+  if (!budget) return '';
+
+  const budgetMapping: Record<string, Record<Language, string>> = {
+    'under-5k': {
+      en: 'Under $5,000',
+      pt: 'Menos de R$25.000',
+      es: 'Menos de $5,000'
+    },
+    '5k-10k': {
+      en: '$5,000 - $10,000',
+      pt: 'R$25.000 - R$50.000',
+      es: '$5,000 - $10,000'
+    },
+    '10k-25k': {
+      en: '$10,000 - $25,000',
+      pt: 'R$50.000 - R$125.000',
+      es: '$10,000 - $25,000'
+    },
+    '25k-50k': {
+      en: '$25,000 - $50,000',
+      pt: 'R$125.000 - R$250.000',
+      es: '$25,000 - $50,000'
+    },
+    '50k-plus': {
+      en: '$50,000+',
+      pt: 'R$250.000+',
+      es: '$50,000+'
+    }
+  };
+
+  return budgetMapping[budget]?.[lang] || budget.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+
+// Generate localized date string
+function getLocalizedDate(lang: Language): string {
+  const now = new Date();
+
+  const localeMap: Record<Language, string> = {
+    en: 'en-US',
+    pt: 'pt-BR',
+    es: 'es-ES'
+  };
+
+  return now.toLocaleString(localeMap[lang], {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short'
+  });
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: ContactFormData = await request.json();
-    const { name, email, company, service, budget, message } = body;
+    const { name, email, company, service, budget, message, language = 'en' } = body;
 
     // Validate required fields
     if (!name || !email || !message) {
@@ -23,14 +143,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create the HTML email template
-    const htmlContent = `
+    // Format service and budget names
+    const formattedService = formatServiceName(service || '', language);
+    const formattedBudget = formatBudgetRange(budget || '', language);
+    const localizedDate = getLocalizedDate(language);
+
+    // Create business notification email (always in Portuguese for you)
+    const businessHtmlContent = `
     <!DOCTYPE html>
     <html>
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>New Contact Form Submission</title>
+        <title>${getTranslation('pt', 'email.business.title')}</title>
         <style>
           body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -113,66 +238,58 @@ export async function POST(request: NextRequest) {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🚀 New Lead Alert!</h1>
-            <p style="margin: 5px 0 0 0; opacity: 0.9;">Someone is interested in your services</p>
+            <h1>${getTranslation('pt', 'email.business.title')}</h1>
+            <p style="margin: 5px 0 0 0; opacity: 0.9;">${getTranslation('pt', 'email.business.subtitle')}</p>
           </div>
 
           <div class="priority">
-            ⚡ New potential client inquiry - Respond within 24 hours for best conversion rates!
+            ${getTranslation('pt', 'email.business.priority')}
           </div>
 
           <div class="field">
-            <div class="field-label">Contact Name</div>
+            <div class="field-label">${getTranslation('pt', 'email.business.labels.contactName')}</div>
             <div class="field-value">${name}</div>
           </div>
 
           <div class="field">
-            <div class="field-label">Email Address</div>
+            <div class="field-label">${getTranslation('pt', 'email.business.labels.emailAddress')}</div>
             <div class="field-value"><a href="mailto:${email}" style="color: #f59e0b; text-decoration: none;">${email}</a></div>
           </div>
 
           ${company ? `
           <div class="field">
-            <div class="field-label">Company</div>
+            <div class="field-label">${getTranslation('pt', 'email.business.labels.company')}</div>
             <div class="field-value">${company}</div>
           </div>
           ` : ''}
 
           ${service ? `
           <div class="field">
-            <div class="field-label">Service Interested In</div>
-            <div class="field-value">${service.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
+            <div class="field-label">${getTranslation('pt', 'email.business.labels.serviceInterested')}</div>
+            <div class="field-value">${formattedService}</div>
           </div>
           ` : ''}
 
           ${budget ? `
           <div class="field">
-            <div class="field-label">Project Budget</div>
-            <div class="field-value">${budget.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
+            <div class="field-label">${getTranslation('pt', 'email.business.labels.projectBudget')}</div>
+            <div class="field-value">${formattedBudget}</div>
           </div>
           ` : ''}
 
           <div class="field message-field">
-            <div class="field-label">Project Details</div>
+            <div class="field-label">${getTranslation('pt', 'email.business.labels.projectDetails')}</div>
             <div class="field-value">${message.replace(/\n/g, '<br>')}</div>
           </div>
 
           <div class="footer">
-            <p><strong>Next Steps:</strong></p>
-            <p>1. Respond to ${email} within 24 hours</p>
-            <p>2. Schedule a discovery call to discuss the project</p>
-            <p>3. Prepare a proposal based on their requirements</p>
+            <p><strong>${getTranslation('pt', 'email.business.footer.nextSteps')}</strong></p>
+            <p>${getTranslation('pt', 'email.business.footer.step1', { email })}</p>
+            <p>${getTranslation('pt', 'email.business.footer.step2')}</p>
+            <p>${getTranslation('pt', 'email.business.footer.step3')}</p>
 
             <div class="timestamp">
-              Received on ${new Date().toLocaleString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZoneName: 'short'
-              })}
+              ${getTranslation('pt', 'email.business.footer.timestamp', { date: localizedDate })}
             </div>
           </div>
         </div>
@@ -180,14 +297,14 @@ export async function POST(request: NextRequest) {
     </html>
     `;
 
-        // Create customer acknowledgment email template
-    const customerEmailContent = `
+    // Create customer acknowledgment email in their preferred language
+    const customerHtmlContent = `
     <!DOCTYPE html>
     <html>
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Thank You - Golden Glow IT Solutions</title>
+        <title>${getTranslation(language, 'email.customer.title', { name })}</title>
         <style>
           body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -287,72 +404,74 @@ export async function POST(request: NextRequest) {
       <body>
         <div class="container">
           <div class="header">
-            <h1>✨ Thank You, ${name}!</h1>
-            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 16px;">Your project inquiry has been received</p>
+            <h1>${getTranslation(language, 'email.customer.title', { name })}</h1>
+            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 16px;">${getTranslation(language, 'email.customer.subtitle')}</p>
           </div>
 
           <div class="content">
-            <p>Hi ${name},</p>
+            <p>${getTranslation(language, 'email.customer.greeting', { name })}</p>
 
-            <p>Thank you for reaching out to <strong>Golden Glow IT Solutions</strong>! We're excited about the possibility of working together on your ${service ? service.replace('-', ' ').toLowerCase() : 'project'}.</p>
+            <p>${getTranslation(language, 'email.customer.intro', {
+              service: formattedService ? formattedService.toLowerCase() : getTranslation(language, 'contactPage.form.fields.service.options.other')
+            })}</p>
 
-            <p>I've received your project details and will personally review your requirements to prepare a tailored response that addresses your specific needs.</p>
+            <p>${getTranslation(language, 'email.customer.review')}</p>
           </div>
 
           <div class="highlight-box">
-            <h3>🕐 Response Timeline</h3>
-            <p style="margin: 0; color: #92400e; font-weight: 500;">You'll hear back from me within 24 hours with next steps and any clarifying questions.</p>
+            <h3>${getTranslation(language, 'email.customer.responseTitle')}</h3>
+            <p style="margin: 0; color: #92400e; font-weight: 500;">${getTranslation(language, 'email.customer.responseText')}</p>
           </div>
 
           <div class="next-steps">
-            <h3>What happens next:</h3>
+            <h3>${getTranslation(language, 'email.customer.nextSteps.title')}</h3>
             <ul>
-              <li><strong>Within 24 hours:</strong> I'll send you a detailed response to your inquiry</li>
-              <li><strong>Discovery Call:</strong> We'll schedule a call to discuss your project in detail</li>
-              <li><strong>Custom Proposal:</strong> You'll receive a tailored proposal with timeline and investment</li>
-              <li><strong>Project Kickoff:</strong> Once approved, we'll begin transforming your vision into reality</li>
+              <li>${getTranslation(language, 'email.customer.nextSteps.step1')}</li>
+              <li>${getTranslation(language, 'email.customer.nextSteps.step2')}</li>
+              <li>${getTranslation(language, 'email.customer.nextSteps.step3')}</li>
+              <li>${getTranslation(language, 'email.customer.nextSteps.step4')}</li>
             </ul>
           </div>
 
           ${service && budget ? `
           <div class="contact-info">
-            <h4 style="margin: 0 0 10px 0; color: #1f2937;">Your Project Summary:</h4>
-            <p style="margin: 5px 0;"><strong>Service:</strong> ${service.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
-            <p style="margin: 5px 0;"><strong>Budget Range:</strong> ${budget.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
-            ${company ? `<p style="margin: 5px 0;"><strong>Company:</strong> ${company}</p>` : ''}
+            <h4 style="margin: 0 0 10px 0; color: #1f2937;">${getTranslation(language, 'email.customer.projectSummary')}</h4>
+            <p style="margin: 5px 0;"><strong>${getTranslation(language, 'email.customer.projectLabels.service')}</strong> ${formattedService}</p>
+            <p style="margin: 5px 0;"><strong>${getTranslation(language, 'email.customer.projectLabels.budget')}</strong> ${formattedBudget}</p>
+            ${company ? `<p style="margin: 5px 0;"><strong>${getTranslation(language, 'email.customer.projectLabels.company')}</strong> ${company}</p>` : ''}
           </div>
           ` : ''}
 
           <div class="content">
-            <p>In the meantime, feel free to browse my <a href="https://yourwebsite.com/services" style="color: #f59e0b; text-decoration: none;">services page</a> to learn more about my development approach and expertise.</p>
+            <p>${getTranslation(language, 'email.customer.browse')}</p>
 
-            <p>If you have any urgent questions, don't hesitate to reach out directly:</p>
+            <p>${getTranslation(language, 'email.customer.urgent')}</p>
           </div>
 
           <div class="contact-info">
-            <p style="margin: 5px 0;"><strong>📧 Email:</strong> goldenglowitsolutions@gmail.com</p>
-            <p style="margin: 5px 0;"><strong>📱 WhatsApp:</strong> +55 22 98125-0144</p>
+            <p style="margin: 5px 0;">${getTranslation(language, 'email.customer.contact.email')}</p>
+            <p style="margin: 5px 0;">${getTranslation(language, 'email.customer.contact.whatsapp')}</p>
           </div>
 
           <div class="signature">
-            <strong>Best regards,</strong><br>
+            <strong>${getTranslation(language, 'email.customer.signature.regards')}</strong><br>
             <div style="margin-top: 8px;">
-              <strong>Josué Barros</strong><br>
-              <div>Founder & Lead Developer</div>
-              <div>Golden Glow IT Solutions</div>
+              <strong>${getTranslation(language, 'email.customer.signature.name')}</strong><br>
+              <div>${getTranslation(language, 'email.customer.signature.title1')}</div>
+              <div>${getTranslation(language, 'email.customer.signature.title2')}</div>
             </div>
           </div>
 
           <div class="footer">
-            <p>This is an automated confirmation. You'll receive a personal response within 24 hours.</p>
-            <p style="margin: 10px 0 0 0; font-size: 12px;">© ${new Date().getFullYear()} Golden Glow IT Solutions. Transforming digital visions into reality.</p>
+            <p>${getTranslation(language, 'email.customer.footer.automation')}</p>
+            <p style="margin: 10px 0 0 0; font-size: 12px;">${getTranslation(language, 'email.customer.footer.copyright', { year: new Date().getFullYear().toString() })}</p>
           </div>
         </div>
       </body>
     </html>
     `;
 
-        // Check if API key is available
+    // Check if API key is available
     if (!process.env.RESEND_API_KEY) {
       console.error('RESEND_API_KEY not found');
       return NextResponse.json(
@@ -367,29 +486,37 @@ export async function POST(request: NextRequest) {
     // Debug log
     console.log('Attempting to send emails with Resend...');
     console.log('API Key available:', !!process.env.RESEND_API_KEY);
+    console.log('Customer language:', language);
 
-    // Send email to business owner (your existing email)
+    // Send email to business owner (in Portuguese)
+    const businessEmailSubject = getTranslation('pt', 'email.business.subject', {
+      name,
+      service: formattedService || 'Consulta Geral'
+    });
+
     const businessEmail = await resend.emails.send({
-      from: 'Contact Form <onboarding@resend.dev>', // Using Resend default domain - change after domain verification
+      from: 'Contact Form <onboarding@resend.dev>',
       to: ['goldenglowitsolutions@gmail.com'],
-      subject: `🚀 New Lead: ${name} - ${service ? service.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'General Inquiry'}`,
-      html: htmlContent,
+      subject: businessEmailSubject,
+      html: businessHtmlContent,
       replyTo: email,
     });
 
-    // Send acknowledgment email to customer
+    // Send acknowledgment email to customer (in their language)
+    const customerEmailSubject = getTranslation(language, 'email.customer.subject', { name });
+
     const customerEmail = await resend.emails.send({
       from: 'Josué Barros - Golden Glow IT Solutions <onboarding@resend.dev>',
       to: [email],
-      subject: `✨ Thank you for your inquiry, ${name}! We'll be in touch within 24h`,
-      html: customerEmailContent,
+      subject: customerEmailSubject,
+      html: customerHtmlContent,
       replyTo: 'goldenglowitsolutions@gmail.com',
     });
 
     console.log('Business email sent successfully:', businessEmail);
     console.log('Customer email sent successfully:', customerEmail);
 
-        return NextResponse.json({
+    return NextResponse.json({
       success: true,
       message: 'Message sent successfully!',
       businessEmail: businessEmail,
