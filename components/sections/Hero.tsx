@@ -55,9 +55,9 @@ export default function Hero() {
           </p>
 
           <p className="hero-description prose prose-xl prose-slate prose-invert mt-8 max-w-2xl">
-            I craft modern web experiences, mobile applications, and custom digital solutions
+            We craft modern web experiences, mobile applications, and custom digital solutions
             that transform how businesses connect with their customers. From concept to deployment,
-            I turn complex challenges into elegant, powerful digital products.
+            we turn complex challenges into elegant, powerful digital products.
           </p>
 
           <div className="hero-button mt-8">

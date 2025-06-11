@@ -17,14 +17,14 @@ export default function AboutPage() {
             </Heading>
                         <div className="prose prose-xl prose-slate prose-invert">
               <p>
-                I&apos;m Josh Barros, a digital solutions architect specializing in modern web
+                Golden Glow IT Solutions is a digital solutions company specializing in modern web
                 development, mobile applications, and ecommerce solutions. With a passion for
-                turning complex business challenges into elegant digital solutions, I help
+                turning complex business challenges into elegant digital solutions, we help
                 organizations transform their online presence and drive meaningful results.
               </p>
               <p>
-                My approach combines technical excellence with strategic thinking. I don&apos;t just
-                build websites—I create digital experiences that engage users, drive conversions,
+                Our approach combines technical excellence with strategic thinking. We don&apos;t just
+                build websites—we create digital experiences that engage users, drive conversions,
                 and scale with your business growth.
               </p>
             </div>
@@ -83,7 +83,7 @@ export default function AboutPage() {
         {/* Approach Section */}
         <div className="mb-20 rounded-2xl bg-slate-800/30 p-12">
           <Heading as="h2" size="lg" className="mb-8 text-center">
-            My Approach
+            Our Approach
           </Heading>
           <div className="grid gap-8 md:grid-cols-2">
             <div>
@@ -123,7 +123,7 @@ export default function AboutPage() {
             Ready to Start Your Next Project?
           </Heading>
           <p className="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
-            Let&apos;s discuss how I can help transform your digital presence and drive real results for your business.
+            Let&apos;s discuss how we can help transform your digital presence and drive real results for your business.
           </p>
           <div className="flex gap-4 justify-center">
             <Button href="/services" label="View Services" showIcon />

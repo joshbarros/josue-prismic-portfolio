@@ -6,15 +6,15 @@ import { FaGithub, FaLinkedin, FaWhatsapp } from "react-icons/fa6";
 
 // Static footer data to replace Prismic settings
 const footerData = {
-  name: "Josh Barros",
+  name: "Golden Glow IT Solutions",
   nav_item: [
     { label: "Home", link: "/" },
     { label: "About", link: "/about" },
     { label: "Services", link: "/services" },
     { label: "Contact", link: "/contact" }
   ],
-  github_link: "https://github.com/josuebarros",
-  linkedin_link: "https://linkedin.com/in/josuebarros",
+  github_link: "https://github.com/joshbarros",
+  linkedin_link: "https://linkedin.com/in/joshbarros",
   whatsapp_link: "https://wa.me/5522981250144"
 };
 

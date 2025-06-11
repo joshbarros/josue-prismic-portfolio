@@ -8,22 +8,22 @@ export default function About() {
         <div className="grid gap-y-8 lg:grid-cols-[1fr,2fr] lg:gap-x-12">
           <div>
             <Heading as="h2" size="lg" className="text-yellow-300">
-              Why Choose My Solutions
+              Why Choose Our Solutions
             </Heading>
           </div>
 
           <div className="space-y-6">
             <div className="prose prose-lg prose-slate prose-invert">
                             <p>
-                With years of experience in modern web development, I specialize in creating
+                With years of experience in modern web development, we specialize in creating
                 digital solutions that don&apos;t just look great—they deliver measurable results
                 for your business.
               </p>
 
               <p>
-                My approach combines cutting-edge technology with strategic thinking. Whether
+                Our approach combines cutting-edge technology with strategic thinking. Whether
                 you need a professional website, an ecommerce platform, a mobile application, or a
-                custom solution, I focus on understanding your unique challenges
+                custom solution, we focus on understanding your unique challenges
                 and building solutions that scale with your growth.
               </p>
             </div>
@@ -48,7 +48,7 @@ export default function About() {
               <div className="rounded-lg bg-slate-700/50 p-6">
                 <h3 className="text-xl font-bold text-yellow-300 mb-3">Collaborative Process</h3>
                 <p className="text-slate-300">
-                  I work closely with you throughout the entire development process, ensuring
+                  We work closely with you throughout the entire development process, ensuring
                   your vision is brought to life exactly as you imagined.
                 </p>
               </div>

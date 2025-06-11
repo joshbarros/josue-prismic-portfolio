@@ -79,7 +79,7 @@ export default function ServicesPage() {
             </span>
           </Heading>
                     <p className="text-xl text-slate-400 max-w-3xl mx-auto">
-            From websites to mobile apps and custom solutions, I provide comprehensive
+            From websites to mobile apps and custom solutions, we provide comprehensive
             digital development services tailored to your business needs and objectives.
           </p>
         </div>

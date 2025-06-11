@@ -9,8 +9,8 @@ const electrolize = Electrolize({
 });
 
 export const metadata: Metadata = {
-  title: "Josh Barros - Solution-Driven Developer",
-  description: "Transforming ideas into powerful digital solutions. Expert in modern web development, 3D experiences, and innovative technology implementations."
+  title: "Golden Glow IT Solutions - Digital Transformation Experts",
+  description: "Transform your business with modern web development, ecommerce solutions, and mobile applications. Expert digital solutions that drive real results for your business growth."
 }
 
 export default function RootLayout({

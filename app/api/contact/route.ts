@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 interface ContactFormData {
   name: string;
   email: string;
@@ -353,6 +351,18 @@ export async function POST(request: NextRequest) {
       </body>
     </html>
     `;
+
+        // Check if API key is available
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY not found');
+      return NextResponse.json(
+        { error: 'Email service not configured. Please contact us directly at goldenglowitsolutions@gmail.com' },
+        { status: 503 }
+      );
+    }
+
+    // Initialize Resend client
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     // Debug log
     console.log('Attempting to send emails with Resend...');

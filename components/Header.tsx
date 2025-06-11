@@ -4,7 +4,7 @@ import NavBar from "./NavBar";
 // Static navigation data to replace Prismic settings
 const staticSettings = {
   data: {
-    name: "Josh Barros",
+    name: "Golden Glow IT Solutions",
     nav_item: [
       { label: "Home", link: "/" },
       { label: "About", link: "/about" },
