@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { MdMenu, MdClose } from "react-icons/md";
 import Button from "./Button";
+import LanguageSelector from "./LanguageSelector";
 import { usePathname } from "next/navigation";
 
 // Define our own types to replace Prismic types
@@ -35,14 +36,19 @@ export default function NavBar({
       <ul className="flex flex-col justify-between rounded-b-lg bg-slate-50 px-4 py-2 md:m-4 md:flex-row md:items-center md:rounded-xl">
         <div className="flex items-center justify-between">
           <NameLogo name={settings.data.name} />
-          <button
-            aria-expanded={open}
-            aria-label="Open menu"
-            className="block p-2 text-2xl text-slate-800 md:hidden"
-            onClick={() => setOpen(true)}
-          >
-            <MdMenu />
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <div className="bg-slate-800 rounded-lg">
+              <LanguageSelector />
+            </div>
+            <button
+              aria-expanded={open}
+              aria-label="Open menu"
+              className="block p-2 text-2xl text-slate-800"
+              onClick={() => setOpen(true)}
+            >
+              <MdMenu />
+            </button>
+          </div>
         </div>
         <div
           className={clsx(
@@ -168,6 +174,11 @@ function DesktopMenu({
           label={settings.data.cta_label}
           className="ml-3"
         />
+      </li>
+      <li className="ml-2">
+        <div className="bg-slate-800 rounded-lg">
+          <LanguageSelector />
+        </div>
       </li>
     </div>
   );

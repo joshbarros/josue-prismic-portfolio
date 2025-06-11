@@ -3,6 +3,8 @@ import { Electrolize } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import LanguageModal from "@/components/LanguageModal";
 
 const electrolize = Electrolize({
   subsets: ["latin"], weight: ["400"]
@@ -21,9 +23,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-gray-900 text-slate-100">
       <body className={electrolize.className}>
-        <Header />
-        {children}
-        <Footer />
+        <LanguageProvider>
+          <Header />
+          {children}
+          <Footer />
+          <LanguageModal />
+        </LanguageProvider>
       </body>
     </html>
   );
