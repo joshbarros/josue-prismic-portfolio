@@ -1,19 +1,18 @@
-import { KeyTextField, LinkField } from "@prismicio/client"
-import { PrismicNextLink } from "@prismicio/next";
+import Link from "next/link";
 import clsx from "clsx";
 import { MdArrowOutward } from "react-icons/md";
 
 type ButtonProps = {
-  linkField: LinkField;
-  label: KeyTextField;
+  href: string;
+  label: string;
   showIcon?: boolean;
   className?: string;
 }
 
-export default function Button ({ linkField, label, showIcon, className }: ButtonProps) {
+export default function Button ({ href, label, showIcon, className }: ButtonProps) {
   return (
-    <PrismicNextLink
-      field={linkField}
+    <Link
+      href={href}
       className={clsx(
         "group relative flex w-fit text-slate-800 items-center justify-center overflow-hidden rounded-md border-2 border-slate-900 bg-slate-50 px-4 py-2 font-bold transition-transform ease-out hover:scale-105",
         className
@@ -22,6 +21,6 @@ export default function Button ({ linkField, label, showIcon, className }: Butto
         <span className="relative flex items-center justify-center gap-2">
           {label} {showIcon && <MdArrowOutward />}
         </span>
-      </PrismicNextLink>
+      </Link>
   )
 }
