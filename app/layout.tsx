@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Electrolize } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import LanguageModal from "@/components/LanguageModal";
 import DynamicLang from "@/components/DynamicLang";
+import { Suspense } from "react";
+import WebVitalsReporter from "@/components/WebVitalsReporter";
+import PrefetchLinks from "@/components/PrefetchLinks";
+import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 
-const electrolize = Electrolize({
-  subsets: ["latin"], weight: ["400"]
-});
+// Using system fonts for better performance and reliability
+const fontClass = "";
 
 // Enhanced SEO metadata with proper internationalization
 export const metadata: Metadata = {
@@ -78,8 +80,40 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="bg-gray-900 text-slate-100">
+    <html className="bg-gray-900 text-slate-100" lang="en">
       <head>
+        {/* Critical CSS inlined for LCP optimization */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            html{background-color:rgb(17 24 39);color:rgb(241 245 249)}
+            body{margin:0;font-family:'Electrolize',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:400;line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+            .hero-container{min-height:100vh;display:flex;align-items:center;padding:2rem 1rem}
+            .hero-grid{display:grid;gap:1.5rem;grid-template-columns:1fr}
+            @media(min-width:1024px){.hero-grid{grid-template-columns:2fr 1fr;gap:2rem}}
+            .hero-title{font-size:3rem;font-weight:700;line-height:1.1;letter-spacing:-0.025em;margin:0 0 1rem 0}
+            @media(min-width:768px){.hero-title{font-size:6rem}}
+            .hero-gradient{background:linear-gradient(to right,rgb(253 224 71),rgb(251 191 36));-webkit-background-clip:text;background-clip:text;color:transparent}
+            .hero-subtitle{font-size:1.5rem;font-weight:500;color:rgb(253 224 71);margin:1rem 0}
+            @media(min-width:768px){.hero-subtitle{font-size:1.875rem}}
+            .hero-description{font-size:1.125rem;color:rgb(148 163 184);max-width:32rem;margin:2rem 0;line-height:1.7}
+            .hero-button{display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 2rem;background:linear-gradient(to right,rgb(253 224 71),rgb(251 191 36));color:rgb(17 24 39);font-weight:600;border-radius:0.5rem;text-decoration:none;transition:transform 0.2s ease-in-out}
+            .hero-button:hover{transform:scale(1.05)}
+            *{box-sizing:border-box}
+            img{max-width:100%;height:auto}
+          `
+        }} />
+        
+        {/* Font loading with fallback */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Electrolize:wght@400&display=swap" 
+          rel="stylesheet"
+        />
+        
+        {/* Resource hints for performance */}
+        <link rel="dns-prefetch" href="https://api.resend.com" />
+        
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
@@ -120,13 +154,22 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={electrolize.className}>
+      <body className={fontClass}>
         <LanguageProvider>
+          <WebVitalsReporter />
+          <PrefetchLinks />
+          <ServiceWorkerRegistration />
           <DynamicLang />
-          <Header />
-          {children}
-          <Footer />
-          <LanguageModal />
+          <Suspense fallback={null}>
+            <Header />
+          </Suspense>
+          <main>{children}</main>
+          <Suspense fallback={null}>
+            <Footer />
+          </Suspense>
+          <Suspense fallback={null}>
+            <LanguageModal />
+          </Suspense>
         </LanguageProvider>
       </body>
     </html>

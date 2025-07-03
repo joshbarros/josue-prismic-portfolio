@@ -1,13 +1,13 @@
 "use client"
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, lazy, Suspense } from "react";
 import Bounded from "@/components/Bounded";
 import Heading from "@/components/Heading";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-gsap.registerPlugin(ScrollTrigger);
+// Dynamic import for GSAP to reduce initial bundle size
+const loadGSAP = () => import('gsap').then(module => module.gsap);
+const loadScrollTrigger = () => import('gsap/ScrollTrigger').then(module => module.ScrollTrigger);
 
 // Optimized selection of key technologies for better animation performance
 const technologies = [
@@ -45,38 +45,76 @@ export default function TechShowcase() {
   const { t } = useLanguage();
 
   useEffect(() => {
-    let ctx = gsap.context(() => {
-      // Clear any existing scroll triggers
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    let gsapContext: any;
+    
+    // Load GSAP dynamically when component is in view
+    const initializeAnimations = async () => {
+      try {
+        const [gsap, ScrollTrigger] = await Promise.all([
+          loadGSAP(),
+          loadScrollTrigger()
+        ]);
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: component.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 4,
-          refreshPriority: -1
-        }
-      });
+        gsap.registerPlugin(ScrollTrigger);
 
-      // Animate each tech row individually
-      gsap.utils.toArray(".tech-row").forEach((row, index) => {
-        gsap.fromTo(row as gsap.TweenTarget, {
-          x: index % 2 === 0 ? 600 : -600
-        }, {
-          x: index % 2 === 0 ? -600 : 600,
-          ease: "none",
-          scrollTrigger: {
-            trigger: row as Element,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 4
+        gsapContext = gsap.context(() => {
+          // Clear any existing scroll triggers
+          ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: component.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 4,
+              refreshPriority: -1
+            }
+          });
+
+          // Animate each tech row individually
+          gsap.utils.toArray(".tech-row").forEach((row, index) => {
+            gsap.fromTo(row as gsap.TweenTarget, {
+              x: index % 2 === 0 ? 600 : -600
+            }, {
+              x: index % 2 === 0 ? -600 : 600,
+              ease: "none",
+              scrollTrigger: {
+                trigger: row as Element,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 4
+              }
+            });
+          });
+        }, component);
+      } catch (error) {
+        console.warn('Failed to load GSAP animations:', error);
+      }
+    };
+
+    // Use Intersection Observer to only load animations when needed
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            initializeAnimations();
+            observer.disconnect();
           }
         });
-      });
-    }, component);
+      },
+      { rootMargin: '50px' }
+    );
 
-    return () => ctx.revert();
+    if (component.current) {
+      observer.observe(component.current);
+    }
+
+    return () => {
+      observer.disconnect();
+      if (gsapContext) {
+        gsapContext.revert();
+      }
+    };
   }, []);
 
   return (

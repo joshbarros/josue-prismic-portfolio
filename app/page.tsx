@@ -1,8 +1,32 @@
 import { Metadata } from "next";
+import { Suspense } from "react";
 import Hero from "@/components/sections/Hero";
-import About from "@/components/sections/About";
-import Solutions from "@/components/sections/Solutions";
-import TechShowcase from "@/components/sections/TechShowcase";
+import dynamic from "next/dynamic";
+
+// Dynamic imports for below-the-fold content
+const About = dynamic(() => import("@/components/sections/About"), {
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="animate-pulse text-slate-300">Loading About...</div>
+    </div>
+  ),
+});
+
+const Solutions = dynamic(() => import("@/components/sections/Solutions"), {
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="animate-pulse text-slate-300">Loading Solutions...</div>
+    </div>
+  ),
+});
+
+const TechShowcase = dynamic(() => import("@/components/sections/TechShowcase"), {
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="animate-pulse text-slate-300">Loading Technologies...</div>
+    </div>
+  ),
+});
 
 // Enhanced metadata with proper internationalization
 export async function generateMetadata(): Promise<Metadata> {
@@ -103,11 +127,29 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function Home() {
   return (
-    <main>
+    <>
       <Hero />
-      <About />
-      <Solutions />
-      <TechShowcase />
-    </main>
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-900">
+          <div className="animate-pulse text-slate-300">Loading content...</div>
+        </div>
+      }>
+        <About />
+      </Suspense>
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-900">
+          <div className="animate-pulse text-slate-300">Loading solutions...</div>
+        </div>
+      }>
+        <Solutions />
+      </Suspense>
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-900">
+          <div className="animate-pulse text-slate-300">Loading technologies...</div>
+        </div>
+      }>
+        <TechShowcase />
+      </Suspense>
+    </>
   );
 }

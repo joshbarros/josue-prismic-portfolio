@@ -3,41 +3,69 @@
 import Bounded from "@/components/Bounded";
 import Button from "@/components/Button";
 import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
 import { useLanguage } from "@/contexts/LanguageContext";
+
+// Dynamic import for GSAP to reduce initial bundle size
+const loadGSAP = () => import('gsap').then(module => module.gsap);
 
 export default function Hero() {
   const component = useRef(null);
   const { t } = useLanguage();
 
   useEffect(() => {
-    let ctx = gsap.context(() => {
-      gsap.fromTo(
-        ".hero-title",
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
-      );
+    let gsapContext: any;
+    
+    // Load GSAP dynamically and initialize animations
+    const initializeAnimations = async () => {
+      try {
+        const gsap = await loadGSAP();
+        
+        gsapContext = gsap.context(() => {
+          gsap.fromTo(
+            ".hero-title",
+            { opacity: 0, y: 50 },
+            { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
+          );
 
-      gsap.fromTo(
-        ".hero-subtitle",
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 1, delay: 0.3, ease: "power3.out" }
-      );
+          gsap.fromTo(
+            ".hero-subtitle",
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 1, delay: 0.3, ease: "power3.out" }
+          );
 
-      gsap.fromTo(
-        ".hero-description",
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 1, delay: 0.6, ease: "power3.out" }
-      );
+          gsap.fromTo(
+            ".hero-description",
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 1, delay: 0.6, ease: "power3.out" }
+          );
 
-      gsap.fromTo(
-        ".hero-button",
-        { opacity: 0, scale: 0.8 },
-        { opacity: 1, scale: 1, duration: 0.8, delay: 0.9, ease: "back.out(1.7)" }
-      );
-    }, component);
+          gsap.fromTo(
+            ".hero-button",
+            { opacity: 0, scale: 0.8 },
+            { opacity: 1, scale: 1, duration: 0.8, delay: 0.9, ease: "back.out(1.7)" }
+          );
+        }, component);
+      } catch (error) {
+        console.warn('Failed to load GSAP animations:', error);
+        // Fallback: show content without animations
+        if (component.current) {
+          const elements = (component.current as HTMLElement).querySelectorAll('.hero-title, .hero-subtitle, .hero-description, .hero-button');
+          elements.forEach((el) => {
+            (el as HTMLElement).style.opacity = '1';
+            (el as HTMLElement).style.transform = 'none';
+          });
+        }
+      }
+    };
 
-    return () => ctx.revert();
+    // Initialize animations immediately for hero (above fold)
+    initializeAnimations();
+
+    return () => {
+      if (gsapContext) {
+        gsapContext.revert();
+      }
+    };
   }, []);
 
   return (

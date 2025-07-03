@@ -1,6 +1,20 @@
+import { Metadata } from "next";
 import Bounded from "@/components/Bounded";
 import Heading from "@/components/Heading";
 import Button from "@/components/Button";
+
+// ISR configuration - revalidate every hour
+export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  title: "Blog - Golden Glow IT Solutions",
+  description: "Latest insights, tutorials, and industry news from our digital transformation experts.",
+  openGraph: {
+    title: "Blog - Golden Glow IT Solutions", 
+    description: "Latest insights, tutorials, and industry news from our digital transformation experts.",
+    url: "https://goldenglowitsolutions.com/blog",
+  },
+};
 
 export default function BlogPage() {
   return (

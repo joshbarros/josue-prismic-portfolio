@@ -1,0 +1,145 @@
+/* Critical CSS for above-the-fold content */
+/* This should be inlined for optimal LCP performance */
+
+/* Core layout and typography */
+html {
+  background-color: rgb(17 24 39); /* bg-gray-900 */
+  color: rgb(241 245 249); /* text-slate-100 */
+}
+
+body {
+  margin: 0;
+  font-family: 'Electrolize', sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hero section critical styles */
+.hero-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.hero-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin: 0 0 1rem 0;
+}
+
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 6rem;
+  }
+}
+
+.hero-gradient {
+  background: linear-gradient(to right, rgb(253 224 71), rgb(251 191 36));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: rgb(253 224 71);
+  margin: 1rem 0;
+}
+
+@media (min-width: 768px) {
+  .hero-subtitle {
+    font-size: 1.875rem;
+  }
+}
+
+.hero-description {
+  font-size: 1.125rem;
+  color: rgb(148 163 184);
+  max-width: 32rem;
+  margin: 2rem 0;
+  line-height: 1.7;
+}
+
+/* Button critical styles */
+.hero-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(to right, rgb(253 224 71), rgb(251 191 36));
+  color: rgb(17 24 39);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: transform 0.2s ease-in-out;
+}
+
+.hero-button:hover {
+  transform: scale(1.05);
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, rgb(51 65 85) 25%, rgb(71 85 105) 50%, rgb(51 65 85) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Performance optimizations */
+* {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent layout shift */
+.hero-visual {
+  width: 24rem;
+  height: 24rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(253, 224, 71, 0.2) 0%, rgba(251, 191, 36, 0.3) 100%);
+  filter: blur(2rem);
+  position: relative;
+}
+
+.hero-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.2) 100%);
+  filter: blur(3rem);
+}
